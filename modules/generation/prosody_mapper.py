@@ -35,7 +35,7 @@ def map_target_to_prosodic_features(alignment_json, source_features_json, target
             "text": target,
             "pitch_shift": feature["pitch_shift"],
             "gain": feature["loudness_shift"],
-            "speed": 1.15
+            "speed": 1
         })
     print(result)
     return result

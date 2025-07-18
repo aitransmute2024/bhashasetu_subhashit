@@ -2,8 +2,8 @@ import os
 from routes.pipeline import complete_pipeline
 from moviepy import VideoFileClip, AudioFileClip
 
-video_path = "C:/Users/admin/OneDrive - Aidwise Private Ltd/BhashaSetu_VAM/samples/input.mp4"
-target_language = "tamil"
+video_path = "C:/Users/admin/OneDrive - Aidwise Private Ltd/BhashaSetu_VAM/samples/phrase_sample.mp4"
+target_language = "hindi"
 
 # Step 1: Check if video file exists
 if not os.path.exists(video_path):
@@ -17,7 +17,6 @@ try:
 except Exception as e:
     raise RuntimeError(f"❌ Error during pipeline execution: {str(e)}")
 
-
 def replace_audio(video_path, new_audio_path, output_path):
     try:
         if not os.path.exists(video_path):
@@ -30,7 +29,7 @@ def replace_audio(video_path, new_audio_path, output_path):
         new_audio = AudioFileClip(new_audio_path)
 
         print("✅ Replacing audio...")
-        final_video = video.set_audio(new_audio)
+        final_video = video.with_audio(new_audio)  # Corrected line
 
         print(f"✅ Writing final video to: {output_path}")
         final_video.write_videofile(output_path, codec="libx264", audio_codec="aac")
@@ -42,4 +41,4 @@ def replace_audio(video_path, new_audio_path, output_path):
 
 
 # Example usage
-replace_audio(video_path, final_audio, "final_video.mp4")
+replace_audio(video_path, final_audio, "phrase_sample.mp4")

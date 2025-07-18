@@ -1,49 +1,30 @@
+# ---- Imports ----
 import nltk
 import spacy
 import textstat
+import asyncio
+import nest_asyncio
 from langdetect import detect, LangDetectException
 from textblob import TextBlob
 from rake_nltk import Rake
 from keybert import KeyBERT
 from transformers import pipeline
 from googletrans import Translator, LANGUAGES
+import concurrent.futures
 
-# --- NLTK Downloads ---
+# ---- Setup ----
 nltk.download('stopwords', quiet=True)
 nltk.download('punkt', quiet=True)
+nest_asyncio.apply()
 
-# --- Global Initializations ---
+# ---- Models ----
 spacy_model = spacy.load("en_core_web_sm")
-translator = Translator()  # Note: Synchronous, not async!
-emotion_model = pipeline(
-    "text-classification",
-    model="j-hartmann/emotion-english-distilroberta-base",
-    top_k=5
-)
+translator = Translator()
+emotion_model = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base", top_k=5)
 kw_model = KeyBERT()
 
-LANG_MAP_FOR_SPECIFIC_MODELS = {
-    "en": "en_XX", "es": "es_XX", "fr": "fr_XX", "pt": "pt_XX", "it": "it_IT",
-    "de": "de_DE", "nl": "nl_XX", "pl": "pl_PL", "ro": "ro_RO", "ru": "ru_RU",
-    "uk": "uk_UA", "ar": "ar_AR", "he": "he_IL", "sw": "sw_KE", "hi": "hi_IN",
-    "bn": "bn_IN", "gu": "gu_IN", "mr": "mr_IN", "ta": "ta_IN", "te": "te_IN",
-    "kn": "kn_IN", "ml": "ml_IN", "pa": "pa_IN", "ur": "ur_PK", "as": "as_IN",
-    "zh": "zh_CN", "ja": "ja_XX", "ko": "ko_KR", "id": "id_ID", "vi": "vi_VN",
-    "th": "th_TH", "fa": "fa_IR", "tr": "tr_TR", "cs": "cs_CZ",
-}
-
-
+# ---- Class ----
 class FullTextAnalysis:
-    """
-    A class for comprehensive text analysis including:
-    - Language detection
-    - Sentiment/emotion analysis
-    - Keywords extraction
-    - Entity recognition
-    - Readability
-    - Translation
-    """
-
     def __init__(self):
         self.rake = Rake()
         self.spacy_model = spacy_model
@@ -58,16 +39,9 @@ class FullTextAnalysis:
             return "unknown"
 
     def get_sentiment(self, text: str) -> str:
-        if isinstance(text, tuple):
-            text = text[0]
         blob = TextBlob(str(text))
         polarity = blob.sentiment.polarity
-        if polarity > 0:
-            return "Positive"
-        elif polarity < 0:
-            return "Negative"
-        else:
-            return "Neutral"
+        return "Positive" if polarity > 0 else "Negative" if polarity < 0 else "Neutral"
 
     def get_emotions(self, text: str) -> list[dict]:
         try:
@@ -92,44 +66,35 @@ class FullTextAnalysis:
 
     def get_dependency_parse(self, text: str) -> list[dict]:
         doc = self.spacy_model(text)
-        return [
-            {
-                "token": token.text,
-                "lemma": token.lemma_,
-                "pos": token.pos_,
-                "dep": token.dep_,
-                "head": token.head.text,
-                "children": [child.text for child in token.children]
-            }
-            for token in doc
-        ]
+        return [{
+            "token": token.text,
+            "lemma": token.lemma_,
+            "pos": token.pos_,
+            "dep": token.dep_,
+            "head": token.head.text,
+            "children": [child.text for child in token.children]
+        } for token in doc]
 
     def get_readability(self, text: str) -> str:
         try:
             score = textstat.flesch_reading_ease(text)
-            if score > 60:
-                level = "Easy"
-            elif score > 30:
-                level = "Medium"
-            else:
-                level = "Difficult"
+            level = "Easy" if score > 60 else "Medium" if score > 30 else "Difficult"
             return f"{score:.2f} ({level})"
         except Exception:
             return "Not available"
 
     async def get_translation(self, text: str, target_language: str = 'en', source_language: str = 'auto') -> str:
         try:
-            if source_language not in LANGUAGES:
-                source_language = 'auto'
-            # googletrans is NOT async, so wrap in thread executor
-            import concurrent.futures
+            if source_language == 'auto' or source_language not in LANGUAGES:
+                source_language = None  # auto-detect
             loop = asyncio.get_event_loop()
-            with concurrent.futures.ThreadPoolExecutor() as pool:
-                translation = await loop.run_in_executor(pool, lambda: self.translator.translate(text, dest=target_language, src=source_language))
-            return translation.text
+            return await loop.run_in_executor(
+                None,
+                lambda: self.translator.translate(text, src=source_language, dest=target_language).text
+            )
         except Exception as e:
             print(f"[Translation Error] {e}")
-            return text  # fallback to original
+            return text
 
     async def analyze(self, text: str, target_language: str = 'en') -> dict:
         if isinstance(text, tuple):
@@ -145,8 +110,21 @@ class FullTextAnalysis:
             "keywords_rake": self.extract_rake_keywords(text),
             "keywords_bert": self.extract_keybert_keywords(text),
             "entities": self.get_entities(text),
-            "entities": self.get_entities(text),
             "dependency_parse": self.get_dependency_parse(text),
             "readability_score": self.get_readability(text),
             "translated_text": translated_text
         }
+
+# Example usage
+# async def main():
+#     analyzer = FullTextAnalysis()
+#     result = await analyzer.analyze("Bonjour, comment allez-vous aujourd'hui ?", target_language="ta")
+#
+#     # Display result
+#     for key, value in result.items():
+#         print(f"{key}:\n{value}\n{'-'*50}")
+#
+# if __name__ == "__main__":
+#     asyncio.run(main())
+
+

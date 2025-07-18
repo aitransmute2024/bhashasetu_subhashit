@@ -6,9 +6,20 @@ from modules.text_analysis.translator import translate_text
 # from modules.text_analysis.asr_transcriber import transcribe_audio
 import asyncio
 
+def safe_async_call(coro):
+    try:
+        return asyncio.run(coro)
+    except RuntimeError as e:
+        if "already running" in str(e):
+            import nest_asyncio
+            nest_asyncio.apply()
+            loop = asyncio.get_event_loop()
+            return loop.run_until_complete(coro)
+        else:
+            raise
 
+# Usage
 analyzer = FullTextAnalysis()
-
 
 def text_file_analysis(audio_path, target_language):
     """
@@ -22,9 +33,7 @@ def text_file_analysis(audio_path, target_language):
     """
     source_text = transcribe_audio(audio_path)
 
-    # target_text = translate_text(source_text, source_language, target_language)
-
-    target_text = asyncio.run(analyzer.analyze(source_text, target_language))  # ✅ wrap with asyncio.run()
+    target_text = safe_async_call(analyzer.analyze(source_text, target_language))
 
     sentiment = target_text.get("sentiment")
     emotions = target_text.get("emotions")
