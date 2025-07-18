@@ -31,6 +31,7 @@ def diarize_and_extract_speakers(audio_path, output_dir="output/speakers"):
             - speaker_data: dictionary of speaker segments, embeddings, and pause segments.
             - json_string: formatted JSON string of the speaker data.
     """
+    sampling_rate = 16000
     os.makedirs(output_dir, exist_ok=True)
     print(f"\n[INFO] Running diarization on: {audio_path}")
 
@@ -38,24 +39,32 @@ def diarize_and_extract_speakers(audio_path, output_dir="output/speakers"):
     print("[INFO] Diarization complete.")
 
     audio = preprocess_wav(audio_path)
-    audio_duration = len(audio) / encoder.sampling_rate
+    audio_duration = len(audio) / sampling_rate
     print(f"[INFO] Audio duration: {round(audio_duration, 2)} seconds")
 
     segments_by_speaker = defaultdict(list)
     speaker_segments = defaultdict(list)
     all_segments = []
+    pause_segments = []
 
     print("[INFO] Parsing diarization results...")
     for turn, _, speaker in diarization.itertracks(yield_label=True):
         start, end = round(turn.start, 2), round(turn.end, 2)
+        duration = end - start
+
+        if duration < 1.5:
+            print(f"[SHORT SEGMENT] {duration:.2f}s from {start}s to {end}s — moved to pause segments.")
+            pause_segments.append({"start": start, "end": end})
+            continue
+
         print(f"[SPEAKER {speaker}] Start: {start}s, End: {end}s")
         all_segments.append((start, end, speaker))
-        segments_by_speaker[speaker].append(audio[int(start * encoder.sampling_rate):int(end * encoder.sampling_rate)])
+        segments_by_speaker[speaker].append(audio[int(start * sampling_rate):int(end * sampling_rate)])
         speaker_segments[speaker].append({"start": start, "end": end})
 
     all_segments.sort()
-    pause_segments = []
-    print("[INFO] Detecting pause segments...")
+
+    print("[INFO] Detecting additional pause segments...")
     prev_end = 0.0
     for start, end, _ in all_segments:
         if start > prev_end:
@@ -77,7 +86,7 @@ def diarize_and_extract_speakers(audio_path, output_dir="output/speakers"):
         file_path = os.path.join(output_dir, f"{speaker_id}.wav")
         AudioSegment(
             speaker_audio.tobytes(),
-            frame_rate=encoder.sampling_rate,
+            frame_rate=sampling_rate,
             sample_width=2,
             channels=1
         ).export(file_path, format="wav")
@@ -87,7 +96,7 @@ def diarize_and_extract_speakers(audio_path, output_dir="output/speakers"):
         speaker_data[speaker_id] = {
             "segments": speaker_segments[speaker],
             "embedding": embedding.tolist(),
-            "duration": round(len(speaker_audio) / encoder.sampling_rate, 2)
+            "duration": round(len(speaker_audio) / sampling_rate, 2)
         }
 
     speaker_data["pause_segments"] = pause_segments
@@ -101,12 +110,8 @@ def diarize_and_extract_speakers(audio_path, output_dir="output/speakers"):
 
     print(f"[INFO] Speaker data saved to {json_path}")
 
-    return speaker_data, json.dumps(speaker_data, indent=2)
+    return speaker_data
 
-
-#
+# Example usage (uncomment to run directly)
 # if __name__ == "__main__":
 #     speakers = diarize_and_extract_speakers("full_audio.wav")
-#     import json
-#     with open("speaker_embeddings.json", "w") as f:
-#         json.dump(speakers, f, indent=2)

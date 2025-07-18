@@ -56,6 +56,8 @@ def complete_pipeline(file_path, target_language):
 
     # Iterate through each speaker in order
     for speaker_id, data in speaker_data_json.items():
+        if speaker_id == "pause_segments":
+            continue  # skip pause segments, handled separately
         for seg in data['segments']:
             start_ms = int(seg['start'] * 1000)
             end_ms = int(seg['end'] * 1000)
@@ -94,9 +96,10 @@ def complete_pipeline(file_path, target_language):
         final_audio += AudioSegment.from_wav(path)
 
     # Export final audio
+    # Export final audio
     os.makedirs('final_output', exist_ok=True)
-    final_audio.export('final_output/final_audio_file.wav', format='wav')
-    final_audio_path = 'final_audio_path'
+    final_audio_path = 'final_output/final_audio_file.wav'
+    final_audio.export(final_audio_path, format='wav')
     return final_audio_path
 
 

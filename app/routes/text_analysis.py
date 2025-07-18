@@ -4,6 +4,7 @@ from modules.text_analysis.asr_transcriber import transcribe_audio
 from modules.text_analysis.text_sentiment_analysis import FullTextAnalysis
 from modules.text_analysis.translator import translate_text
 # from modules.text_analysis.asr_transcriber import transcribe_audio
+import asyncio
 
 
 analyzer = FullTextAnalysis()
@@ -23,7 +24,7 @@ def text_file_analysis(audio_path, target_language):
 
     # target_text = translate_text(source_text, source_language, target_language)
 
-    target_text = analyzer.analyze(source_text, target_language)
+    target_text = asyncio.run(analyzer.analyze(source_text, target_language))  # ✅ wrap with asyncio.run()
 
     sentiment = target_text.get("sentiment")
     emotions = target_text.get("emotions")

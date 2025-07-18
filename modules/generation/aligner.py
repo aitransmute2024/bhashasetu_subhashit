@@ -3,9 +3,7 @@ from simalign import SentenceAligner
 from sentence_transformers import SentenceTransformer, util
 from models.align_models import aligner, embed_model
 
-
 SIMILARITY_THRESHOLD = 0.5
-
 
 def align_sentences(src_text, tgt_text, threshold=SIMILARITY_THRESHOLD):
     """
@@ -19,12 +17,19 @@ def align_sentences(src_text, tgt_text, threshold=SIMILARITY_THRESHOLD):
     Returns:
         dict: JSON-style dictionary with alignment information.
     """
+    if not src_text.strip() or not tgt_text.strip():
+        return {"alignments": []}
+
     src_tokens = src_text.strip().split()
     tgt_tokens = tgt_text.strip().split()
 
+    # Early return if token lists are empty after splitting
+    if not src_tokens or not tgt_tokens:
+        return {"alignments": []}
+
     results = aligner.get_word_aligns(src_tokens, tgt_tokens)
     alignment_method = "itermax"
-    alignment_indices = results[alignment_method]
+    alignment_indices = results.get(alignment_method, [])
 
     # Get embeddings for all unique words
     all_words = list(set(src_tokens + tgt_tokens))
@@ -48,11 +53,3 @@ def align_sentences(src_text, tgt_text, threshold=SIMILARITY_THRESHOLD):
     }
 
     return alignment_json
-
-#
-# # Example usage
-# if __name__ == "__main__":
-#     src = "मुझे खाना पसंद"
-#     tgt = "We don't like food"
-#     result = align_sentences(src, tgt)
-#     print(json.dumps(result, indent=2, ensure_ascii=False))

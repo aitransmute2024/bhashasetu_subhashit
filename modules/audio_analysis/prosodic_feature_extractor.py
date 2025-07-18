@@ -43,30 +43,39 @@ def analyze_parselmouth_features_segment(snd, start_time, end_time):
     hnr = call(harmonicity, "Get mean", 0, 0)
 
     return {
-        "Pitch": round(mean_pitch, 2),
-        "Loudness": round(mean_intensity, 2),
-        "Formant 1 (Hz)": round(f1, 2),
-        "Formant 2 (Hz)": round(f2, 2),
-        "Formant 3 (Hz)": round(f3, 2),
-        "Jitter (local)": round(jitter, 4),
-        "Shimmer (local)": round(shimmer, 4),
-        "HNR (dB)": round(hnr, 2),
-        "Duration (s)": round(snd_segment.get_total_duration(), 2)
+        "pitch": round(mean_pitch, 2),
+        "loudness": round(mean_intensity, 2)
+        # "Formant 1 (Hz)": round(f1, 2),
+        # "Formant 2 (Hz)": round(f2, 2),
+        # "Formant 3 (Hz)": round(f3, 2),
+        # "Jitter (local)": round(jitter, 4),
+        # "Shimmer (local)": round(shimmer, 4),
+        # "HNR (dB)": round(hnr, 2),
+        # "Duration (s)": round(snd_segment.get_total_duration(), 2)
     }
 
+def compute_pitch_shift(pitch_value, base_pitch):
+    if pitch_value <= 0 or base_pitch <= 0:
+        return 0
+    shift = 12 * np.log2(pitch_value / base_pitch)
+    return int(round(shift))
+
+def compute_loudness_shift(loudness_value, base_loudness):
+    shift = (loudness_value - base_loudness) / 5.0  # You can tune the divisor
+    return int(round(shift))
 
 def extract_word_level_features(wav_path):
     """
-    Extracts word-level acoustic features from a WAV file and returns results in JSON format.
+    Extracts word-level acoustic features from a WAV file, computes relative shifts, and saves to JSON.
 
     Args:
         wav_path (str): Path to the WAV audio file.
 
     Returns:
-        str: JSON string containing list of word-level feature dictionaries.
+        list: List of word-level feature dictionaries.
     """
     snd = parselmouth.Sound(wav_path)
-    word_timestamps = transcribe_words_with_timestamps(wav_path)  # assumed implemented elsewhere
+    word_timestamps = transcribe_words_with_timestamps(wav_path)
     features = []
 
     for word_info in word_timestamps:
@@ -75,7 +84,7 @@ def extract_word_level_features(wav_path):
         end = word_info["end"]
 
         try:
-            word_features = analyze_parselmouth_features_segment(snd, start, end)  # assumed implemented
+            word_features = analyze_parselmouth_features_segment(snd, start, end)
             word_features.update({
                 "word": word,
                 "start": round(start, 2),
@@ -85,7 +94,25 @@ def extract_word_level_features(wav_path):
         except Exception as e:
             print(f"⚠️ Error processing word '{word}': {e}")
 
-    return json.dumps(features, indent=2)
+    # Step 1: Compute baseline values
+    pitch_vals = [f["pitch"] for f in features if f["pitch"] > 0]
+    loudness_vals = [f["loudness"] for f in features if f["loudness"] > 0]
+
+    base_pitch = np.mean(pitch_vals) if pitch_vals else 200.0
+    base_loudness = np.mean(loudness_vals) if loudness_vals else 70.0
+
+    # Step 2: Compute relative shifts
+    for f in features:
+        f["pitch_shift"] = compute_pitch_shift(f["pitch"], base_pitch)
+        f["loudness_shift"] = compute_loudness_shift(f["loudness"], base_loudness)
+
+    # Step 3: Save to JSON
+    output_json = "output/features.json"
+    with open(output_json, "w") as f_out:
+        json.dump(features, f_out, indent=2)
+
+    return features
+
 
 # # 🔽 Usage Example
 # if __name__ == "__main__":
