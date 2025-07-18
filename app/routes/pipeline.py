@@ -1,9 +1,8 @@
 import os
 from pydub import AudioSegment
-from preprocess import preprocess_input_file
-from text_analysis import text_file_analysis
-from voice_analysis import voice_file_analysis
-from generation import generate_output
+from .text_analysis import text_file_analysis
+from .voice_analysis import voice_file_analysis
+from .generation import generate_output
 from modules.preprocessing.video_segmenter import extract_scenes
 from modules.preprocessing.noise_reducer import clean_audio
 from modules.preprocessing.audio_splitter import split_audio_by_scenes
@@ -97,7 +96,8 @@ def complete_pipeline(file_path, target_language):
     # Export final audio
     os.makedirs('final_output', exist_ok=True)
     final_audio.export('final_output/final_audio_file.wav', format='wav')
-
+    final_audio_path = 'final_audio_path'
+    return final_audio_path
 
 
 
