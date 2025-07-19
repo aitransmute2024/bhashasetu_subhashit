@@ -19,6 +19,20 @@ LANGUAGE_MAP = {
 }
 
 
+def write_srt(subtitles, output_path='final_output/final_audio_file.srt'):
+    def format_time(ms):
+        seconds, milliseconds = divmod(ms, 1000)
+        minutes, seconds = divmod(seconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        return f"{hours:02}:{minutes:02}:{seconds:02},{milliseconds:03}"
+
+    with open(output_path, 'w', encoding='utf-8') as f:
+        for idx, (start_ms, end_ms, text) in enumerate(subtitles, start=1):
+            f.write(f"{idx}\n")
+            f.write(f"{format_time(start_ms)} --> {format_time(end_ms)}\n")
+            f.write(f"{text}\n\n")
+
+
 def get_language_code(input_language):
     input_language = input_language.strip().lower()
     if input_language in LANGUAGE_MAP:
@@ -49,6 +63,27 @@ def adjust_audio_speed(audio, original_duration, processed_duration):
     return audio
 
 
+def split_text_by_duration(text, start_ms, end_ms, chunk_duration_ms=2000):
+    words = text.strip().split()
+    total_duration = end_ms - start_ms
+    num_chunks = max(1, total_duration // chunk_duration_ms)
+    chunk_size = max(1, len(words) // num_chunks)
+
+    chunks = []
+    for i in range(0, len(words), chunk_size):
+        chunk_words = words[i:i + chunk_size]
+        chunk_text = ' '.join(chunk_words)
+        chunk_index = i // chunk_size
+        chunk_start = start_ms + int(chunk_index * chunk_duration_ms)
+        chunk_end = min(chunk_start + chunk_duration_ms, end_ms)
+        chunks.append((chunk_start, chunk_end, chunk_text))
+    return chunks
+
+# Replace this line:
+# subtitle_entries.append((start_ms, end_ms, translated_text))
+
+
+
 def complete_pipeline(file_path, target_language):
     target_language = get_language_code(target_language)
 
@@ -61,6 +96,8 @@ def complete_pipeline(file_path, target_language):
 
     os.makedirs('temp_segments', exist_ok=True)
 
+    subtitle_entries = []
+
     # Iterate through each speaker
     for speaker_id, data in speaker_data_json.items():
         if speaker_id == "pause_segments":
@@ -69,7 +106,7 @@ def complete_pipeline(file_path, target_language):
         for seg in data['segments']:
             start_ms = int(seg['start'] * 1000)
             end_ms = int(seg['end'] * 1000)
-            original_duration = (end_ms - start_ms) / 1000.0  # seconds
+            original_duration = (end_ms - start_ms) / 1000.0
 
             segment_audio = base_audio[start_ms:end_ms]
             segment_path = f'temp_segments/{speaker_id}_{start_ms}_{end_ms}.wav'
@@ -83,20 +120,16 @@ def complete_pipeline(file_path, target_language):
             output_path = f'temp_segments/processed_{speaker_id}_{start_ms}_{end_ms}.wav'
             generate_output(source_text, translated_text, prosodic_features, emotions, target_language, output_path)
 
-            # Measure duration of generated clip
-            if not os.path.exists(output_path):
-                raise FileNotFoundError(f"❌ Output file not found: {output_path}")
-
             processed_duration = get_audio_duration(output_path)
-
-            # Load and adjust if needed
             processed_audio = AudioSegment.from_wav(output_path)
             adjusted_audio = adjust_audio_speed(processed_audio, original_duration, processed_duration)
-
-            # Overwrite with adjusted clip
             adjusted_audio.export(output_path, format='wav')
 
             output_segments.append((start_ms, output_path))
+
+            # 📝 Save subtitle info
+            chunks = split_text_by_duration(translated_text, start_ms, end_ms, chunk_duration_ms=2000)
+            subtitle_entries.extend(chunks)
 
     # Process pause segments
     for pause in speaker_data_json.get("pause_segments", []):
@@ -118,4 +151,9 @@ def complete_pipeline(file_path, target_language):
     os.makedirs('final_output', exist_ok=True)
     final_audio_path = 'final_output/final_audio_file.wav'
     final_audio.export(final_audio_path, format='wav')
-    return final_audio_path
+
+    # Generate SRT subtitles
+    final_srt_path = 'final_output/final_audio_file.srt'
+    write_srt(subtitle_entries, output_path=final_srt_path)
+
+    return final_audio_path, final_srt_path

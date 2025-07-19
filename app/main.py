@@ -1,6 +1,29 @@
 import os
 from routes.pipeline import complete_pipeline
 from moviepy import VideoFileClip, AudioFileClip
+import subprocess
+
+
+def add_subtitles_to_video(video_path, subtitle_path, output_path_with_subs):
+    if not os.path.exists(subtitle_path):
+        raise FileNotFoundError(f"❌ Subtitle file not found: {subtitle_path}")
+
+    cmd = [
+        'ffmpeg',
+        '-y',  # overwrite
+        '-i', video_path,
+        '-vf', f"subtitles={subtitle_path}",
+        '-c:a', 'copy',
+        output_path_with_subs
+    ]
+
+    try:
+        print("✅ Embedding subtitles into video...")
+        subprocess.run(cmd, check=True)
+        print(f"🎉 Subtitled video saved to: {output_path_with_subs}")
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"❌ ffmpeg error: {e}")
+
 
 video_path = "C:/Users/admin/OneDrive - Aidwise Private Ltd/BhashaSetu_VAM/samples/phrase_sample.mp4"
 target_language = "hindi"
@@ -11,7 +34,7 @@ if not os.path.exists(video_path):
 
 # Step 2: Run the pipeline with error handling
 try:
-    final_audio = complete_pipeline(video_path, target_language)
+    final_audio, final_srt = complete_pipeline(video_path, target_language)
     if not final_audio or not os.path.exists(final_audio):
         raise FileNotFoundError(f"❌ Final audio file not generated or missing: {final_audio}")
 except Exception as e:
@@ -42,3 +65,4 @@ def replace_audio(video_path, new_audio_path, output_path):
 
 # Example usage
 replace_audio(video_path, final_audio, "phrase_sample.mp4")
+add_subtitles_to_video("phrase_sample.mp4", final_srt, "phrase_sample_subtitled.mp4")

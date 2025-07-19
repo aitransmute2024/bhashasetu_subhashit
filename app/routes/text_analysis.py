@@ -31,8 +31,8 @@ def text_file_analysis(audio_path, target_language):
     Returns:
         List[dict]: List of analysis results for each scene.
     """
-    source_text = transcribe_audio(audio_path)
-
+    source_text, source_segments = transcribe_audio(audio_path)
+    print(source_segments)
     target_text = safe_async_call(analyzer.analyze(source_text, target_language))
 
     sentiment = target_text.get("sentiment")
