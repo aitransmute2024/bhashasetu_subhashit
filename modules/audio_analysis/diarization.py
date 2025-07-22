@@ -11,7 +11,7 @@ os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 
 try:
     pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization",
-                                        use_auth_token="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")
+                                        use_auth_token="****")
 except Exception as e:
     print(f"Failed to load pyannote pipeline: {e}")
     pipeline = None
