@@ -1,0 +1,426 @@
+{
+  "scene_1.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.057864874601364136,
+          "Man": 99.942138671875
+        },
+        "emotion": "fear"
+      }
+    ]
+  },
+  "scene_10.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.034194741398096085,
+          "Man": 99.96581268310547
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_11.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.16400478780269623,
+          "Man": 99.83599853515625
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_12.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.05615977570414543,
+          "Man": 99.94383239746094
+        },
+        "emotion": "fear"
+      }
+    ]
+  },
+  "scene_13.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.06662799417972565,
+          "Man": 99.93336486816406
+        },
+        "emotion": "angry"
+      }
+    ]
+  },
+  "scene_14.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.13197654485702515,
+          "Man": 99.8680191040039
+        },
+        "emotion": "angry"
+      }
+    ]
+  },
+  "scene_15.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.004091022536158562,
+          "Man": 99.99591064453125
+        },
+        "emotion": "sad"
+      }
+    ]
+  },
+  "scene_16.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.062475789338350296,
+          "Man": 99.93753051757812
+        },
+        "emotion": "fear"
+      }
+    ]
+  },
+  "scene_17.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.059183519333601,
+          "Man": 99.94081115722656
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_18.jpg": {
+    "caption": "",
+    "num_speakers": 2,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.02442901022732258,
+          "Man": 99.97557067871094
+        },
+        "emotion": "fear"
+      },
+      {
+        "gender": {
+          "Woman": 0.050043169409036636,
+          "Man": 99.94995880126953
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_19.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.031364038586616516,
+          "Man": 99.96863555908203
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_2.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.06497688591480255,
+          "Man": 99.93502807617188
+        },
+        "emotion": "fear"
+      }
+    ]
+  },
+  "scene_20.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.056088123470544815,
+          "Man": 99.94390869140625
+        },
+        "emotion": "fear"
+      }
+    ]
+  },
+  "scene_21.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.05048495903611183,
+          "Man": 99.94951629638672
+        },
+        "emotion": "fear"
+      }
+    ]
+  },
+  "scene_22.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.0360090434551239,
+          "Man": 99.9639892578125
+        },
+        "emotion": "sad"
+      }
+    ]
+  },
+  "scene_23.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.005544962361454964,
+          "Man": 99.99445343017578
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_24.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.032175179570913315,
+          "Man": 99.96782684326172
+        },
+        "emotion": "fear"
+      }
+    ]
+  },
+  "scene_25.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.06510026752948761,
+          "Man": 99.93489074707031
+        },
+        "emotion": "fear"
+      }
+    ]
+  },
+  "scene_26.jpg": {
+    "caption": "",
+    "num_speakers": 2,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.03666923567652702,
+          "Man": 99.96333312988281
+        },
+        "emotion": "fear"
+      },
+      {
+        "gender": {
+          "Woman": 0.04190037027001381,
+          "Man": 99.9581069946289
+        },
+        "emotion": "sad"
+      }
+    ]
+  },
+  "scene_27.jpg": {
+    "caption": "",
+    "num_speakers": 2,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.034705765545368195,
+          "Man": 99.96530151367188
+        },
+        "emotion": "fear"
+      },
+      {
+        "gender": {
+          "Woman": 0.02381817437708378,
+          "Man": 99.97618865966797
+        },
+        "emotion": "sad"
+      }
+    ]
+  },
+  "scene_28.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.06367836892604828,
+          "Man": 99.93632507324219
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_29.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.030404113233089447,
+          "Man": 99.9696044921875
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_3.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.06618120521306992,
+          "Man": 99.93382263183594
+        },
+        "emotion": "fear"
+      }
+    ]
+  },
+  "scene_30.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.05666079744696617,
+          "Man": 99.9433364868164
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_31.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.04987473785877228,
+          "Man": 99.95011901855469
+        },
+        "emotion": "sad"
+      }
+    ]
+  },
+  "scene_4.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.06695317476987839,
+          "Man": 99.93305206298828
+        },
+        "emotion": "fear"
+      }
+    ]
+  },
+  "scene_5.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.04085247591137886,
+          "Man": 99.95915222167969
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_6.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.02569849044084549,
+          "Man": 99.97430419921875
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_7.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.11283275485038757,
+          "Man": 99.88716125488281
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_8.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.10607675462961197,
+          "Man": 99.8939208984375
+        },
+        "emotion": "neutral"
+      }
+    ]
+  },
+  "scene_9.jpg": {
+    "caption": "",
+    "num_speakers": 1,
+    "speakers": [
+      {
+        "gender": {
+          "Woman": 0.0688469260931015,
+          "Man": 99.93115997314453
+        },
+        "emotion": "fear"
+      }
+    ]
+  }
+}

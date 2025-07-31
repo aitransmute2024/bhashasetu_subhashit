@@ -1,0 +1,84 @@
+======================== BENCHMARK LOG ========================
+Hardware Environment: CPU
+Device: Intel i5
+RAM: 16 GB
+Storage: 512 GB SSD
+Python Version: 3.12
+===============================================================
+
+============== PIPELINE TYPES ==============
+
+1. SPEECH-TO-TEXT PROCESSING
+---------------------------------------------------------------
+Modules:
+- Speaker Diarization         - pyannote/speaker-diarization, pyannote/segmentation
+- Speech-to-Text (STT)        - whisper-large
+- Audio Emotion Detection     - superb/wav2vec2-base-superb-er
+
+Metrics:
+- Speaker Diarization
+  - Load Time: 2.4s
+  - Processing Time: 5.6s
+  - Diarization F1: 0.79
+
+- Speech-to-Text
+  - Load Time: 4.1s
+  - Inference Time: 9.3s
+  - Accuracy (WER): 88.2%
+  - RAM Used: 2.6 GB
+
+- Audio Emotion Detection
+  - Load Time: 1.9s
+  - Processing Time: 3.2s
+  - Accuracy: 76.5%
+
+2. TEXT UNDERSTANDING & TRANSLATION
+---------------------------------------------------------------
+Modules:
+- Text Chunking               - indicnlp
+- Translation                 - facebook/nllb-200-distilled-600M / googletrans
+- Text Emotion Analysis       - j-hartmann/emotion-english-distilroberta-base
+- Sentence Embedding          - sentence-transformers/LaBSE
+
+Metrics:
+- Chunking + Translation
+  - Segmentation Time: 1.5s
+  - Translation Time: 5.1s
+  - BLEU Score: 34.2
+
+- Text Emotion Analysis
+  - Analysis Time: 1.3s
+  - Accuracy: 85.4%
+
+- Sentence Embedding
+  - Time: 1.6s
+  - Cosine Sim (EN-HI): 0.88
+
+3. TEXT-TO-SPEECH GENERATION
+---------------------------------------------------------------
+Modules:
+- Speech Synthesis (TTS)      - ai4bharat/indic-parler-tts
+
+Metrics:
+- Synthesis Time: 10.7s
+- Emotion Retention: 84%
+- MOS: 4.1 / 5
+
+4. VOICE Cloning & SUBTITLES
+---------------------------------------------------------------
+Modules:
+- Voice Cloning             - Retrival Based Cloning (RVC)
+
+Metrics:
+- Time Taken: 2.7s
+- Confidence: 93.7%
+
+======================== KPIs ========================
+Total Runtime: 43.0s
+RAM Used (peak): 6.1 GB
+Disk Usage: 210 MB
+
+Accuracy (Avg): 85.9%
+Emotion Retention: 86.2%
+Fidelity (semantic match): 87.1%
+

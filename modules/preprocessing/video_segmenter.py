@@ -24,5 +24,4 @@ def extract_scenes(video_path, output_json='output/scene_timestamps.json', thres
     with open(output_json, 'w') as f:
         json.dump(scene_timestamps, f, indent=2)
 
-    return output_j
-    son  # Return path to JSON for chaining or logging
+    return output_json  # Return path to JSON for chaining or logging

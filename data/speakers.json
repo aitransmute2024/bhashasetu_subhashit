@@ -1,0 +1,161 @@
+{
+  "Assamese": {
+    "available": [
+      {"name": "Amit", "gender": "Male"},
+      {"name": "Sita", "gender": "Female"},
+      {"name": "Poonam", "gender": "Female"},
+      {"name": "Rakesh", "gender": "Male"}
+    ],
+    "recommended": ["Amit", "Sita"]
+  },
+  "Bengali": {
+    "available": [
+      {"name": "Arjun", "gender": "Male"},
+      {"name": "Aditi", "gender": "Female"},
+      {"name": "Tapan", "gender": "Male"},
+      {"name": "Rashmi", "gender": "Female"},
+      {"name": "Arnav", "gender": "Male"},
+      {"name": "Riya", "gender": "Female"}
+    ],
+    "recommended": ["Arjun", "Aditi"]
+  },
+  "Bodo": {
+    "available": [
+      {"name": "Bikram", "gender": "Male"},
+      {"name": "Maya", "gender": "Female"},
+      {"name": "Kalpana", "gender": "Female"}
+    ],
+    "recommended": ["Bikram", "Maya"]
+  },
+  "Chhattisgarhi": {
+    "available": [
+      {"name": "Bhanu", "gender": "Male"},
+      {"name": "Champa", "gender": "Female"}
+    ],
+    "recommended": ["Bhanu", "Champa"]
+  },
+  "Dogri": {
+    "available": [
+      {"name": "Karan", "gender": "Male"}
+    ],
+    "recommended": ["Karan"]
+  },
+  "English": {
+    "available": [
+      {"name": "Thoma", "gender": "Male"},
+      {"name": "Mary", "gender": "Female"},
+      {"name": "Swapna", "gender": "Female"},
+      {"name": "Dinesh", "gender": "Male"},
+      {"name": "Meera", "gender": "Female"},
+      {"name": "Jatin", "gender": "Male"},
+      {"name": "Aakash", "gender": "Male"},
+      {"name": "Sneha", "gender": "Female"},
+      {"name": "Kabir", "gender": "Male"},
+      {"name": "Tisha", "gender": "Female"},
+      {"name": "Chingkhei", "gender": "Male"},
+      {"name": "Thoiba", "gender": "Male"},
+      {"name": "Priya", "gender": "Female"},
+      {"name": "Tarun", "gender": "Male"},
+      {"name": "Gauri", "gender": "Female"},
+      {"name": "Nisha", "gender": "Female"},
+      {"name": "Raghav", "gender": "Male"},
+      {"name": "Kavya", "gender": "Female"},
+      {"name": "Ravi", "gender": "Male"},
+      {"name": "Vikas", "gender": "Male"},
+      {"name": "Riya", "gender": "Female"}
+    ],
+    "recommended": ["Thoma", "Mary"]
+  },
+  "Gujarati": {
+    "available": [
+      {"name": "Yash", "gender": "Male"},
+      {"name": "Neha", "gender": "Female"}
+    ],
+    "recommended": ["Yash", "Neha"]
+  },
+  "Hindi": {
+    "available": [
+      {"name": "Rohit", "gender": "Male"},
+      {"name": "Divya", "gender": "Female"},
+      {"name": "Aman", "gender": "Male"},
+      {"name": "Rani", "gender": "Female"}
+    ],
+    "recommended": ["Rohit", "Divya"]
+  },
+  "Kannada": {
+    "available": [
+      {"name": "Suresh", "gender": "Male"},
+      {"name": "Anu", "gender": "Female"},
+      {"name": "Chetan", "gender": "Male"},
+      {"name": "Vidya", "gender": "Female"}
+    ],
+    "recommended": ["Suresh", "Anu"]
+  },
+  "Malayalam": {
+    "available": [
+      {"name": "Anjali", "gender": "Female"},
+      {"name": "Anju", "gender": "Female"},
+      {"name": "Harish", "gender": "Male"}
+    ],
+    "recommended": ["Anjali", "Harish"]
+  },
+  "Manipuri": {
+    "available": [
+      {"name": "Laishram", "gender": "Male"},
+      {"name": "Ranjit", "gender": "Male"}
+    ],
+    "recommended": ["Laishram", "Ranjit"]
+  },
+  "Marathi": {
+    "available": [
+      {"name": "Sanjay", "gender": "Male"},
+      {"name": "Sunita", "gender": "Female"},
+      {"name": "Nikhil", "gender": "Male"},
+      {"name": "Radha", "gender": "Female"},
+      {"name": "Varun", "gender": "Male"},
+      {"name": "Isha", "gender": "Female"}
+    ],
+    "recommended": ["Sanjay", "Sunita"]
+  },
+  "Nepali": {
+    "available": [
+      {"name": "Amrita", "gender": "Female"}
+    ],
+    "recommended": ["Amrita"]
+  },
+  "Odia": {
+    "available": [
+      {"name": "Manas", "gender": "Male"},
+      {"name": "Debjani", "gender": "Female"}
+    ],
+    "recommended": ["Manas", "Debjani"]
+  },
+  "Punjabi": {
+    "available": [
+      {"name": "Divjot", "gender": "Female"},
+      {"name": "Gurpreet", "gender": "Male"}
+    ],
+    "recommended": ["Divjot", "Gurpreet"]
+  },
+  "Sanskrit": {
+    "available": [
+      {"name": "Aryan", "gender": "Male"}
+    ],
+    "recommended": ["Aryan"]
+  },
+  "Tamil": {
+    "available": [
+      {"name": "Kavitha", "gender": "Female"},
+      {"name": "Jaya", "gender": "Female"}
+    ],
+    "recommended": ["Jaya"]
+  },
+  "Telugu": {
+    "available": [
+      {"name": "Prakash", "gender": "Male"},
+      {"name": "Lalitha", "gender": "Female"},
+      {"name": "Kiran", "gender": "Male"}
+    ],
+    "recommended": ["Prakash", "Lalitha"]
+  }
+}

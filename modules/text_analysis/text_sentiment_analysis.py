@@ -1,70 +1,81 @@
-# ---- Imports ----
-import nltk
-import spacy
-import textstat
 import asyncio
-import nest_asyncio
-from langdetect import detect, LangDetectException
+import concurrent.futures
+import spacy
+spacy_model = spacy.load("en_core_web_sm")
+import textstat
+from langdetect import detect
 from textblob import TextBlob
 from rake_nltk import Rake
 from keybert import KeyBERT
-from transformers import pipeline
+from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
+import argostranslate.package
+import argostranslate.translate
 from googletrans import Translator, LANGUAGES
-import concurrent.futures
-
-# ---- Setup ----
+from modules.text_analysis.translator import detect_and_translate
+# NLTK Setup
+import nltk
 nltk.download('stopwords', quiet=True)
 nltk.download('punkt', quiet=True)
-nest_asyncio.apply()
 
-# ---- Models ----
-spacy_model = spacy.load("en_core_web_sm")
-translator = Translator()
+# Load NLP models
 emotion_model = pipeline("text-classification", model="j-hartmann/emotion-english-distilroberta-base", top_k=5)
 kw_model = KeyBERT()
 
-# ---- Class ----
-class FullTextAnalysis:
-    def __init__(self):
+class UnifiedTextAnalysis:
+    def __init__(self, translation_backend="nllb"):
         self.rake = Rake()
         self.spacy_model = spacy_model
         self.emotion_model = emotion_model
         self.kw_model = kw_model
-        self.translator = translator
+        self.translation_backend = translation_backend
 
-    def detect_language(self, text: str) -> str:
+        # Translation setup
+        self.translator_google = Translator()
+
+        if translation_backend == "nllb":
+            self.tokenizer = AutoTokenizer.from_pretrained("facebook/nllb-200-distilled-600M")
+            self.model = AutoModelForSeq2SeqLM.from_pretrained("facebook/nllb-200-distilled-600M")
+        elif translation_backend == "argos":
+            argostranslate.package.update_package_index()
+            self.available_packages = argostranslate.package.get_available_packages()
+
+    # --- Core NLP Methods ---
+
+    def detect_language(self, text):
         try:
             return detect(text)
-        except (LangDetectException, Exception):
+        except Exception:
             return "unknown"
 
-    def get_sentiment(self, text: str) -> str:
-        blob = TextBlob(str(text))
-        polarity = blob.sentiment.polarity
+    def get_sentiment(self, text):
+        polarity = TextBlob(text).sentiment.polarity
         return "Positive" if polarity > 0 else "Negative" if polarity < 0 else "Neutral"
 
-    def get_emotions(self, text: str) -> list[dict]:
+    def get_emotions(self, text):
         try:
-            result = self.emotion_model(text)
-            return result[0] if result else []
+            return self.emotion_model(text)[0]
         except Exception:
             return []
 
-    def extract_rake_keywords(self, text: str) -> list[str]:
+    def extract_rake_keywords(self, text):
         self.rake.extract_keywords_from_text(text)
         return self.rake.get_ranked_phrases()
 
-    def extract_keybert_keywords(self, text: str, top_n: int = 5) -> list[str]:
+    def extract_keybert_keywords(self, text, top_n=5):
         try:
             return [kw[0] for kw in self.kw_model.extract_keywords(text, top_n=top_n)]
         except Exception:
             return []
 
-    def get_entities(self, text: str) -> list[tuple[str, str]]:
+    def get_entities(self, text):
+        if not self.spacy_model:
+            return []
         doc = self.spacy_model(text)
         return [(ent.text, ent.label_) for ent in doc.ents]
 
-    def get_dependency_parse(self, text: str) -> list[dict]:
+    def get_dependency_parse(self, text):
+        if not self.spacy_model:
+            return []
         doc = self.spacy_model(text)
         return [{
             "token": token.text,
@@ -75,33 +86,76 @@ class FullTextAnalysis:
             "children": [child.text for child in token.children]
         } for token in doc]
 
-    def get_readability(self, text: str) -> str:
+    def get_readability(self, text):
+        if not textstat:
+            return "Not available"
         try:
             score = textstat.flesch_reading_ease(text)
-            level = "Easy" if score > 60 else "Medium" if score > 30 else "Difficult"
+            if score > 60:
+                level = "Easy"
+            elif score > 30:
+                level = "Medium"
+            else:
+                level = "Difficult"
             return f"{score:.2f} ({level})"
         except Exception:
             return "Not available"
 
-    async def get_translation(self, text: str, target_language: str = 'en', source_language: str = 'auto') -> str:
-        try:
-            if source_language == 'auto' or source_language not in LANGUAGES:
-                source_language = None  # auto-detect
-            loop = asyncio.get_event_loop()
-            return await loop.run_in_executor(
-                None,
-                lambda: self.translator.translate(text, src=source_language, dest=target_language).text
-            )
-        except Exception as e:
-            print(f"[Translation Error] {e}")
-            return text
+    # --- Translation Backends ---
 
-    async def analyze(self, text: str, target_language: str = 'en') -> dict:
+    def get_nllb_lang_code(self, lang):
+        mapping = {
+            'en': 'eng_Latn', 'hi': 'hin_Deva', 'bn': 'ben_Beng', 'ta': 'tam_Taml',
+            'te': 'tel_Telu', 'ml': 'mal_Mlym', 'kn': 'kan_Knda', 'gu': 'guj_Gujr',
+            'mr': 'mar_Deva', 'pa': 'pan_Guru', 'ur': 'urd_Arab', 'as': 'asm_Beng',
+            'or': 'ory_Orya', 'ne': 'nep_Deva', 'fr': 'fra_Latn', 'de': 'deu_Latn',
+            'es': 'spa_Latn'
+        }
+        return mapping.get(lang, 'eng_Latn')
+
+    async def translate_text(self, text, source_lang='auto', target_lang='en'):
+        if source_lang == 'auto':
+            source_lang = self.detect_language(text)
+
+        loop = asyncio.get_event_loop()
+
+        if self.translation_backend == "google":
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                translation = await loop.run_in_executor(pool, lambda: self.translator_google.translate(text, dest=target_lang, src=source_lang))
+                return translation.text
+
+        elif self.translation_backend == "nllb":
+            src = self.get_nllb_lang_code(source_lang)
+            tgt = self.get_nllb_lang_code(target_lang)
+
+            def _translate():
+                translator = pipeline("translation", model=self.model, tokenizer=self.tokenizer, src_lang=src, tgt_lang=tgt)
+                result = translator(text, max_length=512)
+                return result[0]['translation_text']
+
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                return await loop.run_in_executor(pool, _translate)
+
+        elif self.translation_backend == "argos":
+            def _translate():
+                package = next((pkg for pkg in self.available_packages if pkg.from_code == source_lang and pkg.to_code == target_lang), None)
+                if package and not package.is_installed():
+                    argostranslate.package.install_from_path(package.download())
+                return argostranslate.translate.translate(text, source_lang, target_lang)
+
+            with concurrent.futures.ThreadPoolExecutor() as pool:
+                return await loop.run_in_executor(pool, _translate)
+
+        return text  # fallback
+
+    # --- Full Analysis ---
+
+    async def analyze(self, text, target_language='en'):
         if isinstance(text, tuple):
             text = text[0]
 
         detected_lang = self.detect_language(text)
-        translated_text = await self.get_translation(text, target_language=target_language, source_language=detected_lang)
+        translated_text = await self.translate_text(text, source_lang=detected_lang, target_lang=target_language)
 
         return {
             "language_detected": detected_lang,
@@ -115,16 +169,11 @@ class FullTextAnalysis:
             "translated_text": translated_text
         }
 
-# Example usage
-# async def main():
-#     analyzer = FullTextAnalysis()
-#     result = await analyzer.analyze("Bonjour, comment allez-vous aujourd'hui ?", target_language="ta")
-#
-#     # Display result
-#     for key, value in result.items():
-#         print(f"{key}:\n{value}\n{'-'*50}")
-#
+# # Example Usage
 # if __name__ == "__main__":
-#     asyncio.run(main())
-
-
+#     async def run():
+#         analyzer = UnifiedTextAnalysis(translation_backend="nllb")
+#         result = await analyzer.analyze("I’m really frustrated with how things are being handled — this is completely unacceptable!.", target_language="hi")
+#         print(result)
+#
+#     asyncio.run(run())
