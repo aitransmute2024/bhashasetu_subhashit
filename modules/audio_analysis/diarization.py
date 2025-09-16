@@ -7,13 +7,19 @@ from collections import defaultdict
 from pydub import AudioSegment
 import json
 from modules.audio_analysis.extract_pauses import pause_identification
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
+
 
 os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+HF_TOKEN = os.getenv("HF_TOKEN")
 
 try:
     pipeline = Pipeline.from_pretrained(
         "pyannote/speaker-diarization",
-        use_auth_token="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"
+        use_auth_token=HF_TOKEN
     )
 except Exception as e:
     print(f"Failed to load pyannote pipeline: {e}")
