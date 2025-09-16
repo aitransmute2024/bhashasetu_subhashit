@@ -1,7 +1,7 @@
 import os
 from pydub import AudioSegment
 from pydub.utils import mediainfo
-from .text_analysis import text_file_analysis
+from .text_analysis import text_file_analysis, text_translation
 from .voice_analysis import voice_file_analysis
 from .generation import generate_output
 from modules.preprocessing.video_segmenter import extract_scenes
@@ -11,6 +11,10 @@ from modules.preprocessing.audio_extractor import extract_audio
 from modules.audio_analysis.diarization import diarize_and_extract_speakers
 from difflib import get_close_matches
 from modules.generation.subtitle_generation import generate_srt_entries_from_text
+from typing import List, Dict
+from modules.generation.speech_synthesizer import generate_tts_audio_simple
+import base64
+
 # Language name to short code mapping
 LANGUAGE_MAP = {
     'hindi': 'hi', 'bengali': 'bn', 'telugu': 'te', 'marathi': 'mr', 'tamil': 'ta',
@@ -93,11 +97,11 @@ def complete_pipeline(file_path, target_language):
             segment_audio.export(segment_path, format='wav')
 
             # Analyze and generate new audio
-            emotions, prosodic_features = voice_file_analysis(segment_path)
+            emotions = voice_file_analysis(segment_path)
             sentiment, emotions, translated_text, source_text = text_file_analysis(segment_path, target_language)
 
             output_path = f'temp_segments/processed_{speaker_id}_{start_ms}_{end_ms}.wav'
-            generate_output(source_text, translated_text, prosodic_features, sentiment, emotions, original_duration, target_language, output_path)
+            generate_output(source_text, translated_text, sentiment, emotions, original_duration, target_language, output_path)
 
             processed_duration = get_audio_duration(output_path)
             processed_audio = AudioSegment.from_wav(output_path)
@@ -136,3 +140,114 @@ def complete_pipeline(file_path, target_language):
     write_srt(subtitle_entries, output_path=final_srt_path)
 
     return final_audio_path, final_srt_path
+
+
+async def text_text_translation(source_text: str, target_language: str = None) -> List[Dict[str, str]]:
+    indian_languages = ["hi","bn","ta","te","kn","ml","mr","gu","pa","or","as","ur"]
+    results = []
+
+    if target_language:
+        translated_text, sentiment = await text_translation(source_text, target_language)
+        results.append({"language": target_language, "translation": translated_text, "sentiment": sentiment})
+    else:
+        for lang in indian_languages:
+            translated_text, sentiment = await text_translation(source_text, lang)
+            results.append({"language": lang, "translation": translated_text, "sentiment": sentiment})
+
+    return results
+
+
+# ------------------- Translation + Audio Function -------------------
+from typing import List, Dict
+import os
+import asyncio
+
+LANG_MAP = {
+    "hindi": "hi",
+    "bengali": "bn",
+    "tamil": "ta",
+    "telugu": "te",
+    "kannada": "kn",
+    "malayalam": "ml",
+    "marathi": "mr",
+    "gujarati": "gu",
+    "punjabi": "pa",
+    "odia": "or",
+    "assamese": "as",
+    "urdu": "ur"
+}
+
+# Create reverse map: code → full name
+CODE_TO_LANG = {v: k for k, v in LANG_MAP.items()}
+
+
+async def translate_and_generate_audio(
+    source_text: str,
+    target_language: str = None,
+    sentiment: str = "neutral",
+    gender: str = "female"
+) -> List[Dict[str, str]]:
+    """
+    Translates source_text to target_language(s) and generates TTS audio for each.
+    Returns list of dicts with language, translation, sentiment,
+    and audio_file as base64 inline data URI.
+    """
+    translations = await text_text_translation(source_text, target_language)
+    results_with_audio = []
+
+    for item in translations:
+        lang_code = item["language"]
+        translation_text = item["translation"]
+        translation_sentiment = item.get("sentiment", sentiment)
+
+        # Get full language name (fallback to code if not found)
+        lang_full = CODE_TO_LANG.get(lang_code, lang_code)
+
+        # Generate TTS audio file
+        audio_file = f"tts_{lang_code}.wav"
+        audio_path = generate_tts_audio_simple(
+            input_text=translation_text,
+            sentiment=translation_sentiment,
+            target_language=lang_code,
+            gender=gender,
+            output_file=audio_file
+        )
+
+        # Convert audio to base64 inline data URI
+        with open(audio_path, "rb") as f:
+            b64_audio = base64.b64encode(f.read()).decode("utf-8")
+            audio_inline = f"data:audio/wav;base64,{b64_audio}"
+
+        results_with_audio.append({
+            "language": lang_full,  # ✅ return full name
+            "translation": translation_text,
+            "sentiment": translation_sentiment,
+            "audio_file": audio_inline
+        })
+
+    return results_with_audio
+
+# Example usage:
+# asyncio.run(translate_and_generate_audio("Hello, how are you?", target_language="hi"))
+
+# print(text_text_translation("Beat around the bush", "hi"))
+# → [{'language': 'hi', 'translation': "Translated 'Hello, how are you?' into hi"}]
+
+# print(text_text_translation("Hello, how are you?"))
+
+
+async def text_text_translation_no_audio(source_text: str, target_language: str = None) -> List[Dict[str, str]]:
+    indian_languages = ["hi","bn","ta","te","kn","ml","mr","gu","pa","or","as","ur"]
+    results = []
+    print(target_language)
+    if target_language != "df":
+        lang_full = CODE_TO_LANG.get(target_language, target_language)
+        translated_text, sentiment = await text_translation(source_text, target_language)
+        results.append({"language": lang_full, "translation": translated_text, "sentiment": sentiment, "audio_file": ""})
+    else:
+        for lang in indian_languages:
+            lang_full = CODE_TO_LANG.get(lang, lang)
+            translated_text, sentiment = await text_translation(source_text, lang)
+            results.append({"language": lang_full, "translation": translated_text, "sentiment": sentiment, "audio_file": ""})
+
+    return results

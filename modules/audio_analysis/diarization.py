@@ -13,7 +13,7 @@ os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 try:
     pipeline = Pipeline.from_pretrained(
         "pyannote/speaker-diarization",
-        use_auth_token="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"
+        use_auth_token="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"
     )
 except Exception as e:
     print(f"Failed to load pyannote pipeline: {e}")
@@ -81,7 +81,7 @@ def diarize_and_extract_speakers(audio_path, output_dir="output/speakers"):
     speaker_data, all_segments, audio_duration = speaker_diarization(audio_path, output_dir)
 
     print("[INFO] Detecting pause segments...")
-    pause_segments = pause_identification(all_segments, audio_duration)
+    pause_segments = pause_identification(all_segments, audio_path)
     speaker_data["pause_segments"] = pause_segments
 
     json_path = os.path.join(output_dir, "speaker_embeddings.json")

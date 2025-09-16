@@ -1,5 +1,5 @@
 {
-  "Assamese": {
+  "as": {
     "available": [
       {"name": "Amit", "gender": "Male"},
       {"name": "Sita", "gender": "Female"},
@@ -8,7 +8,7 @@
     ],
     "recommended": ["Amit", "Sita"]
   },
-  "Bengali": {
+  "bn": {
     "available": [
       {"name": "Arjun", "gender": "Male"},
       {"name": "Aditi", "gender": "Female"},
@@ -19,7 +19,7 @@
     ],
     "recommended": ["Arjun", "Aditi"]
   },
-  "Bodo": {
+  "brx": {
     "available": [
       {"name": "Bikram", "gender": "Male"},
       {"name": "Maya", "gender": "Female"},
@@ -27,20 +27,20 @@
     ],
     "recommended": ["Bikram", "Maya"]
   },
-  "Chhattisgarhi": {
+  "hne": {
     "available": [
       {"name": "Bhanu", "gender": "Male"},
       {"name": "Champa", "gender": "Female"}
     ],
     "recommended": ["Bhanu", "Champa"]
   },
-  "Dogri": {
+  "doi": {
     "available": [
       {"name": "Karan", "gender": "Male"}
     ],
     "recommended": ["Karan"]
   },
-  "English": {
+  "en": {
     "available": [
       {"name": "Thoma", "gender": "Male"},
       {"name": "Mary", "gender": "Female"},
@@ -66,14 +66,14 @@
     ],
     "recommended": ["Thoma", "Mary"]
   },
-  "Gujarati": {
+  "gu": {
     "available": [
       {"name": "Yash", "gender": "Male"},
       {"name": "Neha", "gender": "Female"}
     ],
     "recommended": ["Yash", "Neha"]
   },
-  "Hindi": {
+  "hi": {
     "available": [
       {"name": "Rohit", "gender": "Male"},
       {"name": "Divya", "gender": "Female"},
@@ -82,7 +82,7 @@
     ],
     "recommended": ["Rohit", "Divya"]
   },
-  "Kannada": {
+  "kn": {
     "available": [
       {"name": "Suresh", "gender": "Male"},
       {"name": "Anu", "gender": "Female"},
@@ -91,7 +91,7 @@
     ],
     "recommended": ["Suresh", "Anu"]
   },
-  "Malayalam": {
+  "ml": {
     "available": [
       {"name": "Anjali", "gender": "Female"},
       {"name": "Anju", "gender": "Female"},
@@ -99,14 +99,14 @@
     ],
     "recommended": ["Anjali", "Harish"]
   },
-  "Manipuri": {
+  "mni": {
     "available": [
       {"name": "Laishram", "gender": "Male"},
       {"name": "Ranjit", "gender": "Male"}
     ],
     "recommended": ["Laishram", "Ranjit"]
   },
-  "Marathi": {
+  "mr": {
     "available": [
       {"name": "Sanjay", "gender": "Male"},
       {"name": "Sunita", "gender": "Female"},
@@ -117,40 +117,40 @@
     ],
     "recommended": ["Sanjay", "Sunita"]
   },
-  "Nepali": {
+  "ne": {
     "available": [
       {"name": "Amrita", "gender": "Female"}
     ],
     "recommended": ["Amrita"]
   },
-  "Odia": {
+  "or": {
     "available": [
       {"name": "Manas", "gender": "Male"},
       {"name": "Debjani", "gender": "Female"}
     ],
     "recommended": ["Manas", "Debjani"]
   },
-  "Punjabi": {
+  "pa": {
     "available": [
       {"name": "Divjot", "gender": "Female"},
       {"name": "Gurpreet", "gender": "Male"}
     ],
     "recommended": ["Divjot", "Gurpreet"]
   },
-  "Sanskrit": {
+  "sa": {
     "available": [
       {"name": "Aryan", "gender": "Male"}
     ],
     "recommended": ["Aryan"]
   },
-  "Tamil": {
+  "ta": {
     "available": [
       {"name": "Kavitha", "gender": "Female"},
       {"name": "Jaya", "gender": "Female"}
     ],
     "recommended": ["Jaya"]
   },
-  "Telugu": {
+  "te": {
     "available": [
       {"name": "Prakash", "gender": "Male"},
       {"name": "Lalitha", "gender": "Female"},

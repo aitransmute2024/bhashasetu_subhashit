@@ -165,7 +165,7 @@ Please submit a pull request or open a discussion.
 
 ## 📝 License
 
-MIT License © 2024 [Your Name or Organization]
+MIT License © 2025 AiTransmute 
 
 ---
 

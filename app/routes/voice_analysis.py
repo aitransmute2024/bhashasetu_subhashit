@@ -1,6 +1,6 @@
 import os
 from modules.audio_analysis.emotion_classifier import perform_emotion_analysis
-from modules.audio_analysis.prosodic_feature_extractor import extract_word_level_features
+# from modules.audio_analysis.prosodic_feature_extractor import extract_word_level_features
 
 
 def voice_file_analysis(audio_path):
@@ -17,8 +17,8 @@ def voice_file_analysis(audio_path):
     """
     emotions = perform_emotion_analysis(audio_path)
 
-    prosodic_features = extract_word_level_features(audio_path)
+    # prosodic_features = extract_word_level_features(audio_path)
 
-    return emotions, prosodic_features
+    return emotions
 
 

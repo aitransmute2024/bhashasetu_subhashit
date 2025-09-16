@@ -86,7 +86,6 @@ def extract_voice_features(wav_path):
         "spectral_rolloff": float(spectral_rolloff),
         "zero_crossing_rate": float(zcr),
         "tempo": float(tempo),
-        "duration": float(duration),
         "formant1": float(formants[0]),
         "formant2": float(formants[1]),
         "formant3": float(formants[2]),
